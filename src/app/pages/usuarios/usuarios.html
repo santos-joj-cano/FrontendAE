@@ -363,6 +363,7 @@
                       <lucide-icon name="user-round-search"></lucide-icon>
                     </button>
                     <button
+                      *ngIf="user.usuarioId !== 1"
                       (click)="openDeleteModal(user)"
                       class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
                     >
@@ -830,7 +831,10 @@
               >
                 Editar Usuario
               </h3>
-              <form (ngSubmit)="updateUser(); $event.preventDefault()" class="mt-4">
+              <form
+                (ngSubmit)="updateUser(); $event.preventDefault()"
+                class="mt-4"
+              >
                 <!-- Validación -->
                 <div *ngIf="validationErrors.length > 0" class="mt-4">
                   <div class="rounded-md bg-red-50 p-4">
