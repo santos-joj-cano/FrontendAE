@@ -33,6 +33,17 @@ import {
   Wrench,
   Landmark,
   PencilRuler,
+  Package,
+  PackageSearch,
+  UserLock,
+  UserRoundPlus,
+  UserPen,
+  Search,
+  UserRoundX,
+  ListFilter,
+  ChevronRight,
+  ChevronLeft,
+  UserRoundSearch 
 } from 'lucide-angular';
 
 // 2. Desestructura los providers del módulo de Lucide y asigna un array vacío como valor por defecto
@@ -57,6 +68,17 @@ const { providers = [] } = LucideAngularModule.pick({
   Wrench,
   Landmark,
   PencilRuler,
+  Package,
+  PackageSearch,
+  UserLock,
+  UserRoundPlus,
+  UserPen,
+  Search,
+  UserRoundX,
+  ListFilter,
+  ChevronRight,
+  ChevronLeft,
+  UserRoundSearch 
 });
 
 export const appConfig: ApplicationConfig = {

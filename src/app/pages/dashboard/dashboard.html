@@ -34,6 +34,15 @@
             </li>
             <li>
               <a
+                routerLink="/admin/dashboard/catalogo"
+                class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+              >
+                <lucide-icon name="pencil-ruler"></lucide-icon>
+                Catálogo
+              </a>
+            </li>
+            <li>
+              <a
                 routerLink="/admin/dashboard/compras"
                 class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
               >
@@ -43,11 +52,11 @@
             </li>
             <li>
               <a
-                routerLink="/admin/dashboard/productos"
+                routerLink="/admin/dashboard/inventario"
                 class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
               >
-                <lucide-icon name="pencil-ruler"></lucide-icon>
-                Productos
+                <lucide-icon name="database"></lucide-icon>
+                Inventario
               </a>
             </li>
             <li>
@@ -72,9 +81,30 @@
             <!-- Otras opciones -->
             <li>
               <div class="text-xs/6 font-semibold text-gray-200">
-                Más opciones
+                Ajustes del sistema
               </div>
               <ul role="list" class="-mx-2 mt-2 space-y-1">
+                <!--  Caja Sesión -->
+
+                <!--  End caja sesión -->
+                <li>
+                  <a
+                    routerLink="/admin/dashboard/categoria-producto"
+                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                  >
+                    <lucide-icon name="package-search"></lucide-icon>
+                    Categoría Productos
+                  </a>
+                </li>
+                <li>
+                  <a
+                    routerLink="/admin/dashboard/categoria-proveedor"
+                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                  >
+                    <lucide-icon name="package"></lucide-icon>
+                    Categoría Proveedores
+                  </a>
+                </li>
                 <li>
                   <a
                     routerLink="/admin/dashboard/reportes"
@@ -86,18 +116,27 @@
                 </li>
                 <li>
                   <a
-                    routerLink="/admin/dashboard/ajustes"
+                    routerLink="/admin/dashboard/roles"
                     class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
                   >
-                    <lucide-icon name="wrench"></lucide-icon>
-                    Ajustes del sistema
+                    <lucide-icon name="user-lock"></lucide-icon>
+                    Roles
+                  </a>
+                </li>
+                <li>
+                  <a
+                    routerLink="/admin/dashboard/usuarios"
+                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                  >
+                    <lucide-icon name="users"></lucide-icon>
+                    Usuarios
                   </a>
                 </li>
                 <li>
                   <a
                     (click)="logout()"
                     class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                    style="user-select: none;"
+                    style="user-select: none"
                   >
                     <lucide-icon name="door-open"></lucide-icon>
                     Cerrar sesión
@@ -112,7 +151,7 @@
     </nav>
   </div>
 </div>
-
+<!-- End sidebar -->
 <!-- Sidebar mobile -->
 <div class="xl:pl-72">
   <div
@@ -190,6 +229,15 @@
                   </li>
                   <li>
                     <a
+                      routerLink="/admin/dashboard/catalogo"
+                      class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                    >
+                      <lucide-icon name="pencil-ruler"></lucide-icon>
+                      Catálogo
+                    </a>
+                  </li>
+                  <li>
+                    <a
                       routerLink="/admin/dashboard/compras"
                       class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
                     >
@@ -199,11 +247,11 @@
                   </li>
                   <li>
                     <a
-                      routerLink="/admin/dashboard/productos"
+                      routerLink="/admin/dashboard/inventario"
                       class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
                     >
-                      <lucide-icon name="pencil-ruler"></lucide-icon>
-                      Productos
+                      <lucide-icon name="database"></lucide-icon>
+                      Inventario
                     </a>
                   </li>
                   <li>
@@ -228,9 +276,30 @@
                   <!-- Otras opciones -->
                   <li>
                     <div class="text-xs/6 font-semibold text-gray-200">
-                      Más opciones
+                      Ajustes del sistema
                     </div>
                     <ul role="list" class="-mx-2 mt-2 space-y-1">
+                      <!--  Caja Sesión -->
+
+                      <!--  End caja sesión -->
+                      <li>
+                        <a
+                          routerLink="/admin/dashboard/categoria-producto"
+                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                        >
+                          <lucide-icon name="package-search"></lucide-icon>
+                          Categoría Productos
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          routerLink="/admin/dashboard/categoria-proveedor"
+                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                        >
+                          <lucide-icon name="package"></lucide-icon>
+                          Categoría Proveedores
+                        </a>
+                      </li>
                       <li>
                         <a
                           routerLink="/admin/dashboard/reportes"
@@ -242,18 +311,27 @@
                       </li>
                       <li>
                         <a
-                          routerLink="/admin/dashboard/ajustes"
+                          routerLink="/admin/dashboard/roles"
                           class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
                         >
-                          <lucide-icon name="wrench"></lucide-icon>
-                          Ajustes del sistema
+                          <lucide-icon name="user-lock"></lucide-icon>
+                          Roles
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          routerLink="/admin/dashboard/usuarios"
+                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                        >
+                          <lucide-icon name="users"></lucide-icon>
+                          Usuarios
                         </a>
                       </li>
                       <li>
                         <a
                           (click)="logout()"
                           class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                          style="user-select: none;"
+                          style="user-select: none"
                         >
                           <lucide-icon name="door-open"></lucide-icon>
                           Cerrar sesión
@@ -271,12 +349,10 @@
       </div>
     </div>
   </div>
-
-  <main class="">   
+  <!-- End Sidebar mobile -->
+  <main class="">
     <!-- End contenido principal -->
     <!-- Cargar los demás componentes Productos, etc -->
-     <router-outlet></router-outlet>
-    <!-- Imagen de fondo-->
-    
+    <router-outlet></router-outlet>
   </main>
 </div>
