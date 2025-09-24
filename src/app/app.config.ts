@@ -68,7 +68,11 @@ import {
   CircleQuestionMark,
   NotebookTabs,
   Handshake,
-  BookUser 
+  BookUser,
+  Store,
+  List,
+  Pencil,
+  Receipt    
 } from 'lucide-angular';
 
 // 2. Desestructura los providers del módulo de Lucide y asigna un array vacío como valor por defecto
@@ -126,7 +130,11 @@ const { providers = [] } = LucideAngularModule.pick({
   CircleQuestionMark,
   NotebookTabs,
   Handshake,
-  BookUser 
+  BookUser,
+  Store,
+  List,
+  Pencil,
+  Receipt 
 });
 
 export const appConfig: ApplicationConfig = {

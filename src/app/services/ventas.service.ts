@@ -7,7 +7,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 })
 export class VentasService {
   private apiUrl = 'https://localhost:7182/api/Ventas';
-  
+
   public carrito$ = new BehaviorSubject<any[]>([]);
 
   constructor(private http: HttpClient) {}
@@ -18,6 +18,21 @@ export class VentasService {
    */
   getVentas(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
+  }
+
+  // ✅ Obtiene una venta específica por su ID.
+  getVentaById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  // ✅ Actualiza una venta existente.
+  updateVenta(id: number, venta: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, venta);
+  }
+
+  // ✅ Elimina una venta por su ID.
+  deleteVenta(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 
   // Métodos del API

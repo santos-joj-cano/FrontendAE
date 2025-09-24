@@ -69,14 +69,14 @@
         </div>
         <div
           class="flex flex-col items-center justify-center p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:scale-105"
-          (click)="showReport('detalleProveedores')"
+          (click)="showReport('detalleCompras')"
         >
           <lucide-icon
-            name="book-user"
+            name="store"
             class="h-16 w-16 text-blue-500"
           ></lucide-icon>
           <h3 class="mt-4 text-center font-medium text-lg">
-            Detalle de proveedores
+            Detalle de compras
           </h3>
         </div>
       </div>
@@ -792,6 +792,182 @@
                   <button
                     (click)="nextPage4()"
                     [disabled]="currentPage4 === totalPages4"
+                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Siguiente</span>
+                    <lucide-icon
+                      name="chevron-right"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="currentReport === 'detalleCompras'">
+        <h2
+          class="text-4xl text-center py-10 font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
+        >
+          Detalle de compras
+        </h2>
+        <div class="px-4 sm:px-6 lg:px-8 mt-8">
+          <div
+            class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+          >
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Fecha compra
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Producto
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Cantidad
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Precio unitario
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Total
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <tr *ngFor="let detalleC of paginatedDetalleCompras">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-900">
+                        {{ detalleC.fechaCompra }}
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                  >
+                    <div class="truncate w-32">
+                      {{ detalleC.productoNombre }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-900">
+                        {{ detalleC.cantidad }}
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                  >
+                    <div class="truncate w-32">
+                      {{ detalleC.precioUnitario }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="font-mono text-sm/6 text-gray-900">
+                      {{ detalleC.subtotal }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+          >
+            <div class="flex flex-1 justify-between sm:hidden">
+              <button
+                (click)="prevPage5()"
+                [disabled]="currentPage5 === 1"
+                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Anterior
+              </button>
+              <button
+                (click)="nextPage5()"
+                [disabled]="currentPage5 === totalPages5"
+                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Siguiente
+              </button>
+            </div>
+            <div
+              class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+            >
+              <div>
+                <p class="text-sm text-gray-700">
+                  Mostrando
+                  <span class="font-medium">{{
+                    (currentPage5 - 1) * itemsPerPage5 + 1
+                  }}</span>
+                  a
+                  <span class="font-medium">{{
+                    Math5.min(currentPage5 * itemsPerPage5, totalDetalleCompras)
+                  }}</span>
+                  de
+                  <span class="font-medium">{{ totalDetalleCompras }}</span>
+                  detalles de venta
+                </p>
+              </div>
+              <div>
+                <nav
+                  aria-label="Pagination"
+                  class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                >
+                  <button
+                    (click)="prevPage5()"
+                    [disabled]="currentPage5 === 1"
+                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Anterior</span>
+                    <lucide-icon
+                      name="chevron-left"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                  <ng-container *ngFor="let page of pages5">
+                    <span
+                      *ngIf="page === '...'"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                      >...</span
+                    >
+                    <button
+                      *ngIf="page !== '...'"
+                      (click)="handlePageClick5(page)"
+                      [ngClass]="{
+                        'bg-indigo-600 text-white': currentPage5 === page,
+                        'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                          currentPage5 !== page
+                      }"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                    >
+                      {{ page }}
+                    </button>
+                  </ng-container>
+
+                  <button
+                    (click)="nextPage5()"
+                    [disabled]="currentPage5 === totalPages5"
                     class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                   >
                     <span class="sr-only">Siguiente</span>

@@ -53,11 +53,11 @@ export class Catalogo implements OnInit, OnDestroy {
     private ventasService: VentasService,
     private CajaSesionService: CajasesionService,
     private authService: AuthService,
-    
+
   ) {
     // ✅ Cambio de `user.usuarioId` a `user.userId`
-  const user = this.authService.getCurrentUser();
-  this.usuarioId = user ? user.userId : 0; 
+    const user = this.authService.getCurrentUser();
+    this.usuarioId = user ? user.userId : 0;
   }
 
   ngOnInit(): void {
@@ -78,9 +78,6 @@ export class Catalogo implements OnInit, OnDestroy {
     }
   }
 
-
-  // Notificación
-   // ✅ Nuevo método para mostrar la notificación
   private showToast(message: string, type: 'success' | 'error'): void {
     this.toastMessage = message;
     this.toastType = type;
@@ -91,23 +88,6 @@ export class Catalogo implements OnInit, OnDestroy {
     }, 5000);
   }
 
-  // private getCajaSesionesAbiertas(): void {
-  //   this.CajaSesionService.getCajasesiones()
-  //     .pipe(take(1))
-  //     .subscribe({
-  //       next: (sesiones) => {
-  //         this.cajaSesiones = sesiones;
-  //         // Opcional: selecciona la primera sesión por defecto si existe
-  //         if (this.cajaSesiones.length > 0) {
-  //           this.cajaSesionId = this.cajaSesiones[0].cajaSesionId;
-  //         }
-  //       },
-  //       error: (error) => {
-  //         console.error('Error al obtener sesiones de caja:', error);
-  //         // Puedes mostrar un mensaje de error al usuario si lo deseas
-  //       },
-  //     });
-  // }
   private getCajaSesionesAbiertas(): void {
     this.CajaSesionService.getCajasesiones()
       .pipe(take(1))
@@ -126,18 +106,6 @@ export class Catalogo implements OnInit, OnDestroy {
       });
   }
 
-  // Método existente para GET ALL
-  // fetchProductos(): void {
-  //   this.catalogoService.getProductos().subscribe({
-  //     next: (data) => {
-  //       this.productos = data;
-  //       this.applySearchFilter();
-  //     },
-  //     error: (error) => {
-  //       console.error('Error al cargar las cajas:', error);
-  //     },
-  //   });
-  // }
   fetchProductos(): void {
     this.catalogoService.getProductos().subscribe({
       next: (data) => {
@@ -169,6 +137,7 @@ export class Catalogo implements OnInit, OnDestroy {
 
     this.currentPage = 1; // Reinicia a la primera página con cada nueva búsqueda
   }
+
   // Nuevo: Método para actualizar la cantidad
   onCantidadChange(productoId: number, cantidad: number): void {
     // Asegurarse de que la cantidad sea al menos 1
@@ -197,69 +166,24 @@ export class Catalogo implements OnInit, OnDestroy {
     this.calcularCambio();
   }
 
-  // Método para crear una venta
-  // generarVenta(): void {
-  //   // 1. Validaciones
-  //   if (this.carrito.length === 0) {
-  //     alert('El carrito está vacío.');
-  //     return;
-  //   }
-  //   if (this.efectivoRecibido < this.totalVenta) {
-  //     alert('El efectivo recibido es insuficiente.');
-  //     return;
-  //   }
-  //   if (this.cajaSesionId === null) {
-  //     alert('Debe seleccionar una sesión de caja.');
-  //     return;
-  //   }
-
-  //   // 2. Prepara los datos para el DTO
-  //   const ventaData = {
-  //     total: this.totalVenta,
-  //     efectivoRecibido: this.efectivoRecibido,
-  //     cambio: this.cambio,
-  //     estadoVenta: this.estadoVenta,
-  //     usuarioId: this.usuarioId,
-  //     cajaSesionId: this.cajaSesionId,
-  //     // ✅ Envía los detalles del carrito en un formato que el backend entienda
-  //     detalleVentas: this.carrito.map((item) => ({
-  //       productoId: item.productoId,
-  //       cantidad: item.cantidad,
-  //       precioUnitario: item.precioVenta,
-  //     })),
-  //   };
-
-  //   // 3. Llama al servicio para crear la venta
-  //   this.ventasService
-  //     .createVenta(ventaData)
-  //     .pipe(take(1))
-  //     .subscribe({
-  //       next: (response) => {
-  //         console.log('Venta generada con éxito:', response);
-  //         alert('Venta realizada con éxito!');
-  //         // 4. Limpia el estado del componente después de una venta exitosa
-  //         this.limpiarCarrito();
-  //       },
-  //       error: (error) => {
-  //         console.error('Error al generar la venta:', error);
-  //         alert('Error al generar la venta. Por favor, intente de nuevo.');
-  //       },
-  //     });
-  // }
+  // Generamos la venta
   generarVenta(): void {
     // 1. Validaciones
     if (this.carrito.length === 0) {
-      this.showToast('El carrito está vacío.', 'error'); // ✅ Reemplaza alert()
+      this.showToast('El carrito está vacío.', 'error');
       return;
     }
     if (this.efectivoRecibido < this.totalVenta) {
-      this.showToast('El efectivo recibido es insuficiente.', 'error'); // ✅ Reemplaza alert()
+      this.showToast('El efectivo recibido es insuficiente.', 'error');
       return;
     }
     if (this.cajaSesionId === null) {
-      this.showToast('Debe seleccionar una sesión de caja.', 'error'); // ✅ Reemplaza alert()
+      this.showToast('Debe seleccionar una sesión de caja.', 'error');
       return;
     }
+
+    // Genera un único código de venta para toda la transacción
+    const codigoVenta = this.generarCodigoVenta();
 
     // 2. Prepara los datos para el DTO
     const ventaData = {
@@ -273,6 +197,7 @@ export class Catalogo implements OnInit, OnDestroy {
         productoId: item.productoId,
         cantidad: item.cantidad,
         precioUnitario: item.precioVenta,
+        codigoVenta: codigoVenta,
       })),
     };
 
@@ -283,23 +208,25 @@ export class Catalogo implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           console.log('Venta generada con éxito:', response);
-          this.showToast('Venta realizada con éxito.', 'success'); // ✅ Reemplaza alert()
+          this.showToast('Venta realizada con éxito.', 'success');
+          // ✅ MEJORA: Llama a limpiarCarrito() después de una venta exitosa
           this.limpiarCarrito();
         },
         error: (error) => {
           console.error('Error al generar la venta:', error);
-          this.showToast('Error al generar la venta. Por favor, intente de nuevo.', 'error'); // ✅ Reemplaza alert()
+          this.showToast('Error al generar la venta. Por favor, intente de nuevo.', 'error');
         },
       });
   }
 
-  // ✅ Nuevo método para limpiar el estado del carrito
+  // ✅ Método para limpiar el estado del carrito
   limpiarCarrito(): void {
     this.carrito = [];
     this.totalVenta = 0;
     this.efectivoRecibido = 0;
     this.cambio = 0;
     this.cantidadProducto = {}; // Limpia las cantidades del catálogo
+    this.sidebarVisible = false; // ✅ Cierra el sidebar
   }
 
   // Métodos de utilidad
@@ -320,7 +247,7 @@ export class Catalogo implements OnInit, OnDestroy {
     this.sidebarVisible = !this.sidebarVisible;
   }
 
-  
+
   updateCantidad(item: any, nuevaCantidad: number) {
     if (nuevaCantidad > 0) {
       item.cantidad = nuevaCantidad;
