@@ -6,6 +6,7 @@ import { UserService } from '../../services/user.service';
 import { take } from 'rxjs/operators';
 import { RoleService } from '../../services/role.service';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -19,6 +20,8 @@ export class Usuarios implements OnInit {
   users: any[] = [];
   roles: any[] = [];
   rolesMap: { [key: number]: string } = {};
+
+  isAdmin = false;
 
   // Validaciones
   public validationErrors: string[] = [];
@@ -63,14 +66,29 @@ export class Usuarios implements OnInit {
   userToDelete: any = {};
 
   constructor(
+    private authService: AuthService,
     private userService: UserService,
     private roleService: RoleService
   ) {}
 
+  // ngOnInit(): void {
+  //   this.getUsersWithRoles();
+  // }
   ngOnInit(): void {
-    this.getUsersWithRoles();
+    // Suscríbete al *completo* flujo de usuario.
+    this.authService.currentUser$.subscribe((user) => {
+      const role = user?.role ?? user?.Rol ?? null;
+      this.isAdmin = role === 'Admin'; // <-- actualiza cada vez que cambie
+    });
+
+    this.getUsersWithRoles(); // o getCajas()
   }
 
+  isAdminAccount(user: any): boolean {
+    return (
+      user.usuarioId === 1 || user.nombreUsuario?.toLowerCase() === 'admin'
+    );
+  }
   // Helper para convertir fecha de YYYY-MM-DD a DD-MM-YYYY
   formatDateForDisplay(dateString: string): string {
     if (!dateString) return '';
@@ -101,6 +119,39 @@ export class Usuarios implements OnInit {
     return dateString;
   }
 
+  // getUsersWithRoles(): void {
+  //   forkJoin({
+  //     users: this.userService.getUsers(),
+  //     roles: this.roleService.getRoles(),
+  //   })
+  //     .pipe(take(1))
+  //     .subscribe({
+  //       next: (response) => {
+  //         this.roles = response.roles;
+  //         this.roles.forEach((role: any) => {
+  //           const roleId = role.rolId || role.id;
+  //           if (roleId) {
+  //             this.rolesMap[roleId] = role.rolNombre;
+  //           }
+  //         });
+
+  //         this.users = response.users.map((user: any) => {
+  //           const rolNombre = this.rolesMap[user.rolId] || 'Sin Rol';
+  //           return {
+  //             ...user,
+  //             rolNombre: rolNombre,
+  //             fechaIngreso: this.formatDateForDisplay(user.fechaIngreso),
+  //             fechaNacimiento: this.formatDateForDisplay(user.fechaNacimiento),
+  //           };
+  //         });
+
+  //         this.applyFiltersAndSearch();
+  //       },
+  //       error: (error) => {
+  //         console.error('Error al cargar datos:', error);
+  //       },
+  //     });
+  // }
   getUsersWithRoles(): void {
     forkJoin({
       users: this.userService.getUsers(),
@@ -133,6 +184,18 @@ export class Usuarios implements OnInit {
           console.error('Error al cargar datos:', error);
         },
       });
+  }
+
+  toggleUserEstado(user: any): void {
+    this.userService.toggleEstado(user.usuarioId).subscribe({
+      next: (updated) => {
+        // Actualiza el estado local
+        user.estado = updated.estado;
+        // opcional: refrescar la paginación si quieres
+        this.applyFiltersAndSearch();
+      },
+      error: (err) => console.error('Error al cambiar estado', err),
+    });
   }
 
   applySearchFilter(): void {

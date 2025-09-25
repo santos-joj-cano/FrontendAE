@@ -52,8 +52,7 @@ export class Catalogo implements OnInit, OnDestroy {
     private catalogoService: CatalogoService,
     private ventasService: VentasService,
     private CajaSesionService: CajasesionService,
-    private authService: AuthService,
-
+    private authService: AuthService
   ) {
     // ✅ Cambio de `user.usuarioId` a `user.userId`
     const user = this.authService.getCurrentUser();
@@ -76,6 +75,10 @@ export class Catalogo implements OnInit, OnDestroy {
     if (this.carritoSubscription) {
       this.carritoSubscription.unsubscribe();
     }
+  }
+
+  private esActivo(p: any): boolean {
+    return p.estado === true || p.estado === 1;
   }
 
   private showToast(message: string, type: 'success' | 'error'): void {
@@ -101,42 +104,81 @@ export class Catalogo implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error al obtener sesiones de caja:', error);
           // ✅ Añade la llamada a showToast aquí
-          this.showToast('Error al obtener sesiones de caja. Intente de nuevo más tarde.', 'error');
+          this.showToast(
+            'Error al obtener sesiones de caja. Intente de nuevo más tarde.',
+            'error'
+          );
         },
       });
   }
 
+  // fetchProductos(): void {
+  //   this.catalogoService.getProductos().subscribe({
+  //     next: (data) => {
+  //       this.productos = data;
+  //       this.applySearchFilter();
+  //     },
+  //     error: (error) => {
+  //       console.error('Error al cargar los productos:', error);
+  //       // ✅ Añade la llamada a showToast aquí
+  //       this.showToast('Error al cargar los productos.', 'error');
+  //     },
+  //   });
+  // }
   fetchProductos(): void {
     this.catalogoService.getProductos().subscribe({
       next: (data) => {
-        this.productos = data;
-        this.applySearchFilter();
+        this.productos = data; // Guardamos **todas** las entradas
+        this.applySearchFilter(); // El filtro activo hace la parte “activa”
       },
-      error: (error) => {
-        console.error('Error al cargar los productos:', error);
-        // ✅ Añade la llamada a showToast aquí
+      error: (e) => {
+        console.error('Error al cargar los productos:', e);
         this.showToast('Error al cargar los productos.', 'error');
       },
     });
   }
 
-  // Busqueda
-
-  applySearchFilter(): void {
-    if (this.searchText) {
-      const lowerCaseSearchText = this.searchText.toLowerCase();
-
-      this.filteredproductos = this.productos.filter((caja) => {
-        return (caja.nombre || '').toLowerCase().includes(lowerCaseSearchText);
-      });
-    } else {
-      this.filteredproductos = [...this.productos];
+  private isProductoActivo(p: any): boolean {
+    // Si el servidor devuelve `estado` como string 'Activo' / 'Inactivo'
+    if (typeof p.estado === 'string') {
+      return p.estado.trim().toLowerCase() === 'activo';
     }
 
-    this.totalproductos = this.filteredproductos.length;
-
-    this.currentPage = 1; // Reinicia a la primera página con cada nueva búsqueda
+    // Si el servidor devuelve `estado` como booleano true/false
+    return !!p.estado;
   }
+
+  // Busqueda
+
+  // applySearchFilter(): void {
+  //   if (this.searchText) {
+  //     const lowerCaseSearchText = this.searchText.toLowerCase();
+
+  //     this.filteredproductos = this.productos.filter((caja) => {
+  //       return (caja.nombre || '').toLowerCase().includes(lowerCaseSearchText);
+  //     });
+  //   } else {
+  //     this.filteredproductos = [...this.productos];
+  //   }
+
+  //   this.totalproductos = this.filteredproductos.length;
+
+  //   this.currentPage = 1; // Reinicia a la primera página con cada nueva búsqueda
+  // }
+  applySearchFilter(): void {
+  const term = this.searchText.trim().toLowerCase();
+
+  if (term) {
+    this.filteredproductos = this.activeProductos.filter((p) =>
+      (p.nombre ?? '').toLowerCase().includes(term)
+    );
+  } else {
+    this.filteredproductos = [...this.activeProductos];
+  }
+
+  this.totalproductos = this.filteredproductos.length;
+  this.currentPage = 1;
+}
 
   // Nuevo: Método para actualizar la cantidad
   onCantidadChange(productoId: number, cantidad: number): void {
@@ -214,7 +256,10 @@ export class Catalogo implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error al generar la venta:', error);
-          this.showToast('Error al generar la venta. Por favor, intente de nuevo.', 'error');
+          this.showToast(
+            'Error al generar la venta. Por favor, intente de nuevo.',
+            'error'
+          );
         },
       });
   }
@@ -247,7 +292,6 @@ export class Catalogo implements OnInit, OnDestroy {
     this.sidebarVisible = !this.sidebarVisible;
   }
 
-
   updateCantidad(item: any, nuevaCantidad: number) {
     if (nuevaCantidad > 0) {
       item.cantidad = nuevaCantidad;
@@ -259,6 +303,10 @@ export class Catalogo implements OnInit, OnDestroy {
     // ✅ CLAVE: Recalcula el total y el cambio después de cada actualización
     this.calcularTotalVenta();
     this.calcularCambio();
+  }
+
+  get activeProductos(): Array<any> {
+    return this.productos.filter(this.esActivo.bind(this));
   }
 
   removeFromCarrito(item: any) {

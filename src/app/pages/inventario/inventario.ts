@@ -415,6 +415,10 @@ export class Inventario implements OnInit {
       });
   }
 
+  get filteredCategorias(): Array<any> {
+  return this.categorias.filter((c) => c.estado === true);
+  }
+
   async updateImage(): Promise<void> {
     if (!this.editedProduct.productoId || !this.selectedFile) {
       return; // No hay producto o imagen seleccionada

@@ -36,17 +36,18 @@ export class AuthService {
 
   // Carga el usuario al inicializar el servicio
   private loadCurrentUser(): void {
-    // ✅ Wrap localStorage access with the platform check
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
-      if (token && !this.jwtHelper.isTokenExpired(token)) {
-        const decodedToken = this.jwtHelper.decodeToken(token);
-        this.userSubject.next(decodedToken);
-      } else {
-        this.userSubject.next(null);
-      }
+  if (isPlatformBrowser(this.platformId)) {
+    // <‑‑  Cambiado `token` → `auth_token`
+    const token = localStorage.getItem('auth_token');
+
+    if (token && !this.jwtHelper.isTokenExpired(token)) {
+      const decodedToken = this.jwtHelper.decodeToken(token);
+      this.userSubject.next(decodedToken);
+    } else {
+      this.userSubject.next(null);
     }
   }
+}
 
   // ✅ Método para obtener el usuario actual
   public getCurrentUser(): any | null {
@@ -54,17 +55,18 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<any> {
-    const credentials = { username, password };
-    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-      tap((response: any) => {
-        const token = response.token;
-        if (token && isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('auth_token', token);
-          this.decodeAndSetRole(token);
-        }
-      })
-    );
-  }
+  const credentials = { username, password };
+  return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
+    tap((response: any) => {
+      const token = response.token;
+      if (token && isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('auth_token', token);
+        this.decodeAndSetRole(token);
+        this.loadCurrentUser();          // <‑‑  añadido
+      }
+    })
+  );
+}
 
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
@@ -86,6 +88,12 @@ export class AuthService {
     }
     return null;
   }
+
+  // AuthService
+public get currentUser(): any | null {
+  return this.userSubject.value;   // getValue() is equivalent
+}
+
 
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {

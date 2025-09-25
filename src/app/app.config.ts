@@ -72,7 +72,8 @@ import {
   Store,
   List,
   Pencil,
-  Receipt    
+  Receipt,
+  Check     
 } from 'lucide-angular';
 
 // 2. Desestructura los providers del módulo de Lucide y asigna un array vacío como valor por defecto
@@ -134,7 +135,8 @@ const { providers = [] } = LucideAngularModule.pick({
   Store,
   List,
   Pencil,
-  Receipt 
+  Receipt,
+  Check  
 });
 
 export const appConfig: ApplicationConfig = {

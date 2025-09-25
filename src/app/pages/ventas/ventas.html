@@ -64,10 +64,14 @@
                 class="grid flex-1 grid-cols-2 gap-x-6 text-sm sm:col-span-3 sm:grid-cols-3 lg:col-span-2"
               >
                 <div>
-                  <dt class="font-medium text-gray-900">Código de venta</dt>
-                  <dd class="mt-1 text-gray-500">{{ venta.codigoVenta }}</dd>
+                  <dt class="hidden md:block font-medium text-gray-900 ">
+                    Código de venta
+                  </dt>
+                  <dd class="hidden md:block mt-1 text-gray-500">
+                    {{ venta.codigoVenta }}
+                  </dd>
                 </div>
-                <div class="hidden sm:block">
+                <div class="hidden md:block">
                   <dt class="font-medium text-gray-900">Fecha de venta</dt>
                   <dd class="mt-1 text-gray-500">
                     <time [attr.datetime]="venta.fecha">{{
@@ -76,49 +80,58 @@
                   </dd>
                 </div>
                 <div>
-                  <dt class="font-medium text-gray-900">Total</dt>
-                  <dd class="mt-1 font-medium text-gray-900">
+                  <dt class="hidden md:block font-medium text-gray-900">
+                    Total
+                  </dt>
+                  <dd class="hidden md:block mt-1 font-medium text-gray-900">
                     Q{{ venta.total | number : "1.2-2" }}
                   </dd>
                 </div>
               </dl>
 
               <div
-                class="flex justify-end lg:col-span-2 lg:items-center lg:space-x-4"
+                class="mt-4 flex w-full justify-end sm:mt-0 sm:w-auto sm:col-span-1 lg:col-span-2"
               >
-                <button
-                  (click)="openEditModal(venta)"
-                  type="button"
-                  class="flex items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  <lucide-angular
-                    name="pencil"
-                    class="size-4 mr-2"
-                  ></lucide-angular>
-                  <span>Editar</span>
-                </button>
-                <button
-                  (click)="openViewModal(venta)"
-                  type="button"
-                  class="flex items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  <lucide-angular
-                    name="list"
-                    class="size-4 mr-2"
-                  ></lucide-angular>
-                  <span>Ver detalles</span>
-                </button>
-                <button
-                  (click)="openDeleteModal(venta)"
-                  type="button"
-                  class="flex items-center justify-center rounded-md border border-red-300 bg-red-50 px-2.5 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                >
-                  <lucide-angular
-                    name="trash"
-                    class="size-4 mr-2"
-                  ></lucide-angular>
-                  <span>Eliminar</span>
-                </button>
+                <div class="flex space-x-2 whitespace-nowrap sm:justify-end">
+                  <button
+                    (click)="openEditModal(venta)"
+                    type="button"
+                    title="Editar"
+                    class="flex items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    <lucide-angular
+                      name="pencil"
+                      class="size-4 mr-2 lg:mr-4 sm:mr-0"
+                    ></lucide-angular>
+                    <span class="inline sm:hidden lg:inline">Editar</span>
+                  </button>
+
+                  <button
+                    (click)="openViewModal(venta)"
+                    type="button"
+                    title="Ver detalles"
+                    class="flex items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    <lucide-angular
+                      name="list"
+                      class="size-4 mr-2 lg:mr-4 sm:mr-0"
+                    ></lucide-angular>
+                    <span class="inline sm:hidden lg:inline">Ver detalles</span>
+                  </button>
+
+                  <button
+                    (click)="openDeleteModal(venta)"
+                    type="button"
+                    title="Eliminar"
+                    class="flex items-center justify-center rounded-md border border-red-300 bg-red-50 px-2.5 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    <lucide-angular
+                      name="trash"
+                      class="size-4 mr-2 lg:mr-4 sm:mr-0"
+                    ></lucide-angular>
+                    <span class="inline sm:hidden lg:inline">Eliminar</span>
+                  </button>
+                </div>
               </div>
             </div>
 
