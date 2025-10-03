@@ -71,9 +71,6 @@ export class Usuarios implements OnInit {
     private roleService: RoleService
   ) {}
 
-  // ngOnInit(): void {
-  //   this.getUsersWithRoles();
-  // }
   ngOnInit(): void {
     // Suscríbete al *completo* flujo de usuario.
     this.authService.currentUser$.subscribe((user) => {
@@ -99,6 +96,16 @@ export class Usuarios implements OnInit {
     return `${day}-${month}-${year}`;
   }
   // Helper para convertir fecha de YYYY-MM-DD a YYYY-MM-DD para inputs tipo date
+  // private formatDateForInput(dateString: string): string {
+  //   if (!dateString) {
+  //     return '';
+  //   }
+  //   const date = new Date(dateString);
+  //   const year = date.getFullYear();
+  //   const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  //   const day = date.getDate().toString().padStart(2, '0');
+  //   return `${year}-${month}-${day}`;
+  // }
   private formatDateForInput(dateString: string): string {
     if (!dateString) {
       return '';
@@ -109,6 +116,7 @@ export class Usuarios implements OnInit {
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+
   // Helper para convertir fecha de DD-MM-YYYY a YYYY-MM-DD
   formatDateForBackend(dateString: string): string {
     if (!dateString) return '';
@@ -119,39 +127,6 @@ export class Usuarios implements OnInit {
     return dateString;
   }
 
-  // getUsersWithRoles(): void {
-  //   forkJoin({
-  //     users: this.userService.getUsers(),
-  //     roles: this.roleService.getRoles(),
-  //   })
-  //     .pipe(take(1))
-  //     .subscribe({
-  //       next: (response) => {
-  //         this.roles = response.roles;
-  //         this.roles.forEach((role: any) => {
-  //           const roleId = role.rolId || role.id;
-  //           if (roleId) {
-  //             this.rolesMap[roleId] = role.rolNombre;
-  //           }
-  //         });
-
-  //         this.users = response.users.map((user: any) => {
-  //           const rolNombre = this.rolesMap[user.rolId] || 'Sin Rol';
-  //           return {
-  //             ...user,
-  //             rolNombre: rolNombre,
-  //             fechaIngreso: this.formatDateForDisplay(user.fechaIngreso),
-  //             fechaNacimiento: this.formatDateForDisplay(user.fechaNacimiento),
-  //           };
-  //         });
-
-  //         this.applyFiltersAndSearch();
-  //       },
-  //       error: (error) => {
-  //         console.error('Error al cargar datos:', error);
-  //       },
-  //     });
-  // }
   getUsersWithRoles(): void {
     forkJoin({
       users: this.userService.getUsers(),
@@ -361,54 +336,6 @@ export class Usuarios implements OnInit {
     this.validationErrors = [];
   }
 
-  // En tu clase Usuarios, busca el método createUser()
-  // createUser(): void {
-  //   // if (
-  //   //   !this.newUser.primerNombre ||
-  //   //   !this.newUser.primerApellido ||
-  //   //   !this.newUser.email ||
-  //   //   !this.newUser.rolId
-  //   // ) {
-  //   //   console.error('Por favor, completa los campos requeridos.');
-  //   //   return;
-  //   // }
-  //   this.validationErrors = this.validateUser(this.newUser, true);
-  //   if (this.validationErrors.length > 0) {
-  //     // Si hay errores, detiene la ejecución.
-  //     return;
-  //   }
-
-  //   // Crea una copia del objeto para no modificar el original
-  //   const userToCreate = {
-  //     ...this.newUser,
-  //   };
-
-  //   // Formatea las fechas al formato ISO 8601 antes de enviar al backend
-  //   if (userToCreate.fechaIngreso) {
-  //     userToCreate.fechaIngreso = new Date(
-  //       userToCreate.fechaIngreso
-  //     ).toISOString();
-  //   }
-  //   if (userToCreate.fechaNacimiento) {
-  //     userToCreate.fechaNacimiento = new Date(
-  //       userToCreate.fechaNacimiento
-  //     ).toISOString();
-  //   }
-
-  //   this.userService
-  //     .createUser(userToCreate)
-  //     .pipe(take(1))
-  //     .subscribe({
-  //       next: (response) => {
-  //         console.log('Usuario creado exitosamente:', response);
-  //         this.closeCreateModal();
-  //         this.getUsersWithRoles();
-  //       },
-  //       error: (error) => {
-  //         console.error('Error al crear usuario:', error);
-  //       },
-  //     });
-  // }
   async createUser(): Promise<void> {
     // 1. Espera el resultado de la validación asíncrona
     this.validationErrors = await this.validateUser(this.newUser, true);
@@ -472,9 +399,11 @@ export class Usuarios implements OnInit {
     this.editedUser = {
       ...user,
       // Formatea la fecha de ingreso para el input de tipo 'date'
-      fechaIngreso: this.formatDateForInput(user.fechaIngreso),
+      //fechaIngreso: this.formatDateForBackend(user.fechaIngreso),
+      fechaIngreso: this.formatDateForBackend(user.fechaIngreso),
       // Formatea la fecha de nacimiento de la misma manera
-      fechaNacimiento: this.formatDateForInput(user.fechaNacimiento),
+      //fechaNacimiento: this.formatDateForBackend(user.fechaNacimiento),
+      fechaNacimiento: this.formatDateForBackend(user.fechaNacimiento),
     };
     this.isEditModalOpen = true;
   }
@@ -485,54 +414,6 @@ export class Usuarios implements OnInit {
     this.validationErrors = [];
   }
 
-  // En la clase Usuarios, busca el método updateUser()
-  // updateUser(): void {
-  //   // if (!this.editedUser.usuarioId) {
-  //   //   console.error('No se ha seleccionado ningún usuario para editar.');
-  //   //   return;
-  //   // }
-  //   this.validationErrors = this.validateUser(this.editedUser);
-
-  //   if (this.validationErrors.length > 0) {
-  //     console.warn('Errores de validación:', this.validationErrors);
-  //     return; // <- ya no envía nada
-  //   }
-
-  //   if (!this.editedUser.usuarioId) {
-  //     console.error('No se ha seleccionado ningún usuario para editar.');
-  //     return;
-  //   }
-
-  //   // Crea una copia del objeto para no modificar el original
-  //   const userToUpdate = { ...this.editedUser };
-
-  //   // Formatea las fechas al formato ISO 8601 antes de enviar al backend
-  //   if (userToUpdate.fechaIngreso) {
-  //     userToUpdate.fechaIngreso = new Date(
-  //       userToUpdate.fechaIngreso
-  //     ).toISOString();
-  //   }
-  //   if (userToUpdate.fechaNacimiento) {
-  //     userToUpdate.fechaNacimiento = new Date(
-  //       userToUpdate.fechaNacimiento
-  //     ).toISOString();
-  //   }
-
-  //   // Llama al servicio para actualizar el usuario con el objeto formateado
-  //   this.userService
-  //     .updateUser(userToUpdate.usuarioId, userToUpdate)
-  //     .pipe(take(1))
-  //     .subscribe({
-  //       next: (response) => {
-  //         console.log('Usuario actualizado exitosamente:', response);
-  //         this.closeEditModal();
-  //         this.getUsersWithRoles(); // Recargar la lista de usuarios
-  //       },
-  //       error: (error) => {
-  //         console.error('Error al actualizar usuario:', error);
-  //       },
-  //     });
-  // }
   async updateUser(): Promise<void> {
     if (!this.editedUser.usuarioId) {
       console.error('No se ha seleccionado ningún usuario para editar.');
@@ -568,7 +449,7 @@ export class Usuarios implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Usuario actualizado exitosamente:', response);
+          //console.log('Usuario actualizado exitosamente:', response);
           this.closeEditModal();
           this.getUsersWithRoles(); // Recargar la lista de usuarios
         },
@@ -681,8 +562,8 @@ export class Usuarios implements OnInit {
   openViewModal(user: any): void {
     this.viewedUser = {
       ...user,
-      fechaIngreso: this.formatDateForDisplay(user.fechaIngreso),
-      fechaNacimiento: this.formatDateForDisplay(user.fechaNacimiento),
+      fechaIngreso: this.formatDateForBackend(user.fechaIngreso),
+      fechaNacimiento: this.formatDateForBackend(user.fechaNacimiento),
     };
     this.isViewModalOpen = true;
   }
