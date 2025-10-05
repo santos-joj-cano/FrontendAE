@@ -327,6 +327,10 @@ export class Proveedores implements OnInit {
     this.selectedFile = event.target.files[0];
     this.validationErrors = [];
 
+    // Definimos las constantes para las dimensiones
+    const MIN_DIMENSION = 40;
+    const MAX_DIMENSION = 5000;
+
     if (this.selectedFile) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -334,14 +338,30 @@ export class Proveedores implements OnInit {
 
         const img = new Image();
         img.onload = () => {
-          // ✅ Mantenemos la verificación de 1000x1000 píxeles
-          if (img.width !== 5000 || img.height !== 5000) {
+          const width = img.width;
+          const height = img.height;
+
+          // ✅ Modificamos la validación para verificar el rango (mínimo 40px, máximo 5000px)
+          if (
+            width < MIN_DIMENSION ||
+            height < MIN_DIMENSION ||
+            width > MAX_DIMENSION ||
+            height > MAX_DIMENSION
+          ) {
             this.validationErrors.push(
-              'La imagen debe ser de 5000x5000 píxeles.'
+              `La imagen debe tener dimensiones entre ${MIN_DIMENSION}x${MIN_DIMENSION} y ${MAX_DIMENSION}x${MAX_DIMENSION} píxeles. Dimensiones actuales: ${width}x${height}`
             );
             this.selectedFile = null;
             this.selectedFilePreview = null;
           }
+          // Opcional: Si quieres que además de estar en el rango, deba ser cuadrada (lo que se sugiere en tu backend)
+          // else if (width !== height) {
+          //   this.validationErrors.push(
+          //     'La imagen debe ser cuadrada (ancho igual a alto).'
+          //   );
+          //   this.selectedFile = null;
+          //   this.selectedFilePreview = null;
+          // }
         };
         img.src = reader.result as string;
       };

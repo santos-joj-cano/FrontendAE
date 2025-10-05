@@ -312,6 +312,10 @@ export class Inventario implements OnInit {
     this.selectedFile = event.target.files[0];
     this.validationErrors = []; // Limpia errores previos
 
+    // Definimos las constantes para las dimensiones
+    const MIN_DIMENSION = 40;
+    const MAX_DIMENSION = 5000;
+
     if (this.selectedFile) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -319,20 +323,35 @@ export class Inventario implements OnInit {
 
         const img = new Image();
         img.onload = () => {
-          // ✅ Verifica las dimensiones de la imagen
-          if (img.width !== 1000 || img.height !== 1000) {
+          const width = img.width;
+          const height = img.height;
+
+          // ✅ Validación: El ancho y alto deben estar entre MIN_DIMENSION y MAX_DIMENSION
+          if (
+            width < MIN_DIMENSION ||
+            height < MIN_DIMENSION ||
+            width > MAX_DIMENSION ||
+            height > MAX_DIMENSION
+          ) {
             this.validationErrors.push(
-              'La imagen debe ser de 1000x1000 píxeles.'
+              `La imagen debe tener dimensiones entre ${MIN_DIMENSION}x${MIN_DIMENSION} y ${MAX_DIMENSION}x${MAX_DIMENSION} píxeles. Dimensiones actuales: ${width}x${height}`
             );
             this.selectedFile = null; // Anula la selección
             this.selectedFilePreview = null; // Borra la previsualización
           }
+          // Opcional: Puedes añadir una validación extra si la imagen final debe ser 1000x1000 (aunque el backend la redimensiona)
+          // else if (width !== height) {
+          //   this.validationErrors.push('La imagen debe ser cuadrada (ancho igual a alto).');
+          //   this.selectedFile = null;
+          //   this.selectedFilePreview = null;
+          // }
         };
         img.src = reader.result as string;
       };
       reader.readAsDataURL(this.selectedFile);
     }
   }
+
   async uploadImageAndGetUrl(): Promise<string | null> {
     if (!this.selectedFile) {
       return null;

@@ -10,6 +10,7 @@ import { AuthService } from '../../services/auth.service';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router'; // 👈 Importa este módulo
 
 interface Producto {
   productoId: number;
@@ -24,6 +25,107 @@ interface Producto {
   categoriaId: number;
 }
 
+interface NavItem {
+  name: string;
+  routerLink: string;
+  iconName: string;
+  roles: string[]; // <-- IMPORTANTE: Los roles que pueden ver este enlace
+  separator?: string; // Para títulos de sección
+}
+
+// 💡 Lista completa de toda la navegación del sistema
+const fullNavigation: NavItem[] = [
+  // Enlaces principales
+  {
+    name: 'Caja',
+    routerLink: 'caja',
+    iconName: 'landmark',
+    roles: ['Admin'],
+  },
+  {
+    name: 'Compras',
+    routerLink: 'compras',
+    iconName: 'shopping-basket',
+    roles: ['Admin'],
+  },
+  {
+    name: 'Historial de ventas',
+    routerLink: 'historial-ventas',
+    iconName: 'percent',
+    roles: ['Admin', 'Empleado'],
+  },
+  {
+    name: 'Proveedores',
+    routerLink: 'proveedores',
+    iconName: 'warehouse',
+    roles: ['Admin'],
+  },
+  {
+    name: 'Ventas',
+    routerLink: 'ventas',
+    iconName: 'pencil-ruler',
+    roles: ['Admin', 'Empleado'],
+  },
+
+  // Separador de Ajustes
+  {
+    name: 'Ajustes',
+    routerLink: '',
+    iconName: '',
+    roles: ['Admin'],
+    separator: 'Ajustes del sistema',
+  },
+
+  // Enlaces de ajustes del sistema (típicamente solo para Admin o Roles de Gerencia)
+  {
+    name: 'Categoría Productos',
+    routerLink: 'categoria-producto',
+    iconName: 'package-search',
+    roles: ['Admin', 'Empleado'],
+  },
+  {
+    name: 'Categoría Proveedores',
+    routerLink: 'categoria-proveedor',
+    iconName: 'package',
+    roles: ['Admin'],
+  },
+  {
+    name: 'Movimiento caja',
+    routerLink: 'movimiento-caja',
+    iconName: 'hand-coins',
+    roles: ['Admin', 'Cajero'],
+  },
+  {
+    name: 'Productos',
+    routerLink: 'productos',
+    iconName: 'database',
+    roles: ['Admin', 'JefeCompras'],
+  },
+  {
+    name: 'Reportes',
+    routerLink: 'reportes',
+    iconName: 'chart-area',
+    roles: ['Admin'],
+  },
+  {
+    name: 'Roles',
+    routerLink: 'roles',
+    iconName: 'user-lock',
+    roles: ['Admin'],
+  },
+  {
+    name: 'Sesiones de caja',
+    routerLink: 'caja-sesion',
+    iconName: 'inbox',
+    roles: ['Admin'],
+  },
+  {
+    name: 'Usuarios',
+    routerLink: 'usuarios',
+    iconName: 'users',
+    roles: ['Admin'],
+  },
+];
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -33,12 +135,18 @@ interface Producto {
     RouterOutlet,
     RouterLink,
     FormsModule,
+    RouterModule,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class Dashboard implements OnInit {
+  // Define una propiedad para el rol base y la navegación filtrada
+  userRole: string = ''; // 'Admin' o 'Empleado'
+  navigation: NavItem[] = [];
+  routeBase: string = ''; // /admin/dashboard o /employee/dashboard
+
   //Current User
   currentUserName: string | null = null;
 
@@ -65,16 +173,58 @@ export class Dashboard implements OnInit {
     private router: Router
   ) {}
 
+  // ngOnInit(): void {
+  //   this.authService.userRole$.subscribe((role) => {
+  //     this.isAdmin = role === 'Admin';
+  //   });
+  //   this.currentUserName = this.authService.getCurrentUserName();
+
+  //   // this.checkLowstock();
+
+  //   // Programar notificaciones recurrentes
+  //   this.programarNotificaciones();
+  // }
   ngOnInit(): void {
+    // 1. OBTENER EL ROL SINCRÓNICAMENTE al inicio
+    const userRoleValue = this.authService.getUserRole();
+    if (userRoleValue) {
+      this.userRole = userRoleValue; // 👈 Asignar el rol a la propiedad
+    }
+
+    // 2. INICIALIZAR LA NAVEGACIÓN
+    this.setupNavigation(); // 👈 Llamar a la función que usa this.userRole
+
+    // 3. (Opcional) Mantener la suscripción para reactividad futura si la necesitas
     this.authService.userRole$.subscribe((role) => {
       this.isAdmin = role === 'Admin';
     });
+
     this.currentUserName = this.authService.getCurrentUserName();
-
-    // this.checkLowstock();
-
-    // Programar notificaciones recurrentes
     this.programarNotificaciones();
+  }
+
+  setupNavigation(): void {
+    const role = this.userRole;
+
+    if (!role) {
+      this.navigation = [];
+      return;
+    }
+
+    // 1. Establecer la ruta base (prefijo para los enlaces del sidebar)
+    if (role === 'Admin') {
+      this.routeBase = '/admin/dashboard';
+    } else if (role === 'Empleado') {
+      // Asumo que tus rutas para empleado comienzan en /employee/dashboard
+      this.routeBase = '/employee/dashboard';
+    } else {
+      this.routeBase = '/'; // Fallback seguro
+    }
+
+    // 2. Filtrar la navegación: solo mantiene los ítems que incluyen el rol del usuario
+    this.navigation = fullNavigation.filter((item) =>
+      item.roles.includes(role)
+    );
   }
 
   // 1. Variable para controlar el estado del menú (abierto/cerrado)

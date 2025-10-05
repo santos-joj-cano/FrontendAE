@@ -5,7 +5,7 @@ import { CatalogoService } from '../../services/catalogo.service';
 import { VentasService } from '../../services/ventas.service';
 import { CajasesionService } from '../../services/cajasesion.service';
 import { LucideAngularModule } from 'lucide-angular';
-import { Subscription } from 'rxjs';
+
 import { AuthService } from '../../services/auth.service';
 import { take } from 'rxjs/operators';
 @Component({
@@ -38,7 +38,7 @@ export class Catalogo implements OnInit, OnDestroy {
   sidebarVisible: boolean = false;
 
   // Suscripciones
-  private carritoSubscription!: Subscription;
+  // private carritoSubscription!: Subscription;
 
   //More
   cajaSesiones: any[] = []; // ✅ Propiedad para almacenar las sesiones de caja
@@ -61,20 +61,21 @@ export class Catalogo implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchProductos();
-    this.carritoSubscription = this.ventasService.carrito$.subscribe(
-      (items) => {
-        this.carrito = items;
-        this.totalVenta = this.ventasService.getCarritoTotal();
-        this.calcularCambio();
-      }
-    );
+
+    // this.carritoSubscription = this.ventasService.carrito$.subscribe(
+    //   (items) => {
+    //     this.carrito = items;
+    //     this.totalVenta = this.ventasService.getCarritoTotal();
+    //     this.calcularCambio();
+    //   }
+    // );
     this.getCajaSesionesAbiertas();
   }
 
   ngOnDestroy(): void {
-    if (this.carritoSubscription) {
-      this.carritoSubscription.unsubscribe();
-    }
+    // if (this.carritoSubscription) {
+    //   this.carritoSubscription.unsubscribe();
+    // }
   }
 
   private esActivo(p: any): boolean {

@@ -91,6 +91,11 @@ export class AuthService {
     return null;
   }
 
+  // ✅ Método simple para obtener el valor del rol actual
+  public getUserRole(): string | null {
+    return this.userRoleSubject.value;
+  }
+
   getCurrentUserName(): string | null {
     const token = this.getToken();
     if (token) {

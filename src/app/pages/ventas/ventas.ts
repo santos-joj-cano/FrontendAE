@@ -18,7 +18,7 @@ import { take, tap, catchError } from 'rxjs/operators'; // ✅ Importa 'tap' y '
 import { LucideAngularModule } from 'lucide-angular';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-
+import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-ventas',
   standalone: true,
@@ -63,18 +63,26 @@ export class Ventas implements OnInit, OnDestroy {
   toastMessage: string = '';
   toastType: 'success' | 'error' = 'success';
 
+  isAdmin: boolean = false; // Controla la visibilidad de los botones
+
   constructor(
     private ventasService: VentasService,
     // ✅ CLAVE: Asegúrate de que CatalogoService está inyectado en el constructor
     private catalogoService: CatalogoService,
+    private authService: AuthService, 
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
+    // 1. Obtener y establecer el rol del usuario
+    const userRole = this.authService.getUserRole();
+    this.isAdmin = userRole === 'Admin'; // true si el rol es 'Admin'
+
+    // 2. Continuar con la carga de datos
     this.fetchProductos().subscribe(() => {
       this.fetchVentas();
     });
-  }
+}
 
   ngOnDestroy(): void {
     if (this.ventasSubscription) {
