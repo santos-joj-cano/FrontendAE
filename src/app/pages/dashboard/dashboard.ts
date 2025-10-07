@@ -266,7 +266,7 @@ export class Dashboard implements OnInit {
         this.productosConstockBajo = nuevosProductos;
       },
       error: (err) => {
-        console.error('Error al obtener el inventario:', err);
+        //console.error('Error al obtener el inventario:', err);
       },
     });
   }
@@ -360,7 +360,7 @@ export class Dashboard implements OnInit {
     const mostrarNotificacion = () => {
       this.checkLowstock(); // refresca productos y llena this.notificaciones
       if (this.notificaciones.length > 0) {
-        console.log('🔔 Mostrando notificaciones de stock bajo');
+        //console.log('🔔 Mostrando notificaciones de stock bajo');
       }
     };
 
@@ -397,7 +397,7 @@ export class Dashboard implements OnInit {
 
         return decodedToken.unique_name;
       } catch (error) {
-        console.error('Error decodificando el token:', error);
+        //console.error('Error decodificando el token:', error);
 
         return null;
       }
@@ -481,7 +481,7 @@ export class Dashboard implements OnInit {
           this.closeChangePasswordModal();
         },
         error: (err) => {
-          console.error(err);
+          //console.error(err);
           const msg =
             err?.error?.message ?? 'No se pudo cambiar la contraseña.';
           this.validationErrors = [msg];

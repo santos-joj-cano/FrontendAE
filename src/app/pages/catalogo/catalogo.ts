@@ -103,7 +103,7 @@ export class Catalogo implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('Error al obtener sesiones de caja:', error);
+          //console.error('Error al obtener sesiones de caja:', error);
           // ✅ Añade la llamada a showToast aquí
           this.showToast(
             'Error al obtener sesiones de caja. Intente de nuevo más tarde.',
@@ -120,7 +120,7 @@ export class Catalogo implements OnInit, OnDestroy {
         this.applySearchFilter(); // El filtro activo hace la parte “activa”
       },
       error: (e) => {
-        console.error('Error al cargar los productos:', e);
+        //console.error('Error al cargar los productos:', e);
         this.showToast('Error al cargar los productos.', 'error');
       },
     });
@@ -228,12 +228,12 @@ export class Catalogo implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Venta generada con éxito:', response);
+          //console.log('Venta generada con éxito:', response);
           this.showToast('Venta realizada con éxito.', 'success');
           this.limpiarCarrito();
         },
         error: (err) => {
-          console.error('Error al generar la venta:', err);
+          //console.error('Error al generar la venta:', err);
           // Intenta extraer y mostrar un mensaje de error más útil
           const errorMsg =
             err.error?.message ||

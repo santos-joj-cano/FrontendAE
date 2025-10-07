@@ -115,7 +115,7 @@ export class Ventas implements OnInit, OnDestroy {
           }, {});
         }),
         catchError((error) => {
-          console.error('Error al cargar los productos:', error);
+          //console.error('Error al cargar los productos:', error);
           this.showToast(
             'Error al cargar los productos. Intente de nuevo.',
             'error'
@@ -135,7 +135,7 @@ export class Ventas implements OnInit, OnDestroy {
           this.agruparVentasPorCodigo();
         },
         error: (error) => {
-          console.error('Error al cargar las ventas:', error);
+          //console.error('Error al cargar las ventas:', error);
           this.showToast('Error al cargar el historial de ventas.', 'error');
         },
       });
@@ -387,9 +387,9 @@ export class Ventas implements OnInit, OnDestroy {
           this.showToast('Error al generar el PDF.', 'error');
         });
     } else {
-      console.warn(
-        'La generación de PDF no se puede realizar en el servidor (SSR).'
-      );
+      //console.warn(
+        //'La generación de PDF no se puede realizar en el servidor (SSR).'
+      //);
     }
   }
   onFacturaClick(venta: Ventas): void {
@@ -505,7 +505,7 @@ export class Ventas implements OnInit, OnDestroy {
           this.fetchVentas(); // Recarga la lista para reflejar el cambio
         },
         error: (error) => {
-          console.error('Error al eliminar la venta:', error);
+          //console.error('Error al eliminar la venta:', error);
           this.showToast('Error al eliminar la venta.', 'error');
         },
       });
@@ -530,7 +530,7 @@ export class Ventas implements OnInit, OnDestroy {
             this.fetchVentas();
           },
           error: (error) => {
-            console.error('Error al eliminar la venta:', error);
+            //console.error('Error al eliminar la venta:', error);
             this.showToast(
               'Error al eliminar la venta. Inténtalo de nuevo.',
               'error'

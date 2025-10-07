@@ -368,7 +368,7 @@ export class Reportes implements OnInit {
     if (this.validReports.includes(reportName)) {
       this.currentReport = reportName;
     } else {
-      console.error(`Reporte no válido: ${reportName}`);
+      //console.error(`Reporte no válido: ${reportName}`);
       // Puedes manejar el error, por ejemplo, volviendo al menú
       this.currentReport = 'menu';
     }
@@ -439,7 +439,7 @@ export class Reportes implements OnInit {
           this.applyFiltersAndSearch();
         },
         error: (error) => {
-          console.error('Error al cargar datos:', error);
+          //console.error('Error al cargar datos:', error);
         },
       });
   }
@@ -776,7 +776,7 @@ export class Reportes implements OnInit {
           this.applySearchFilter2();
         },
         error: (error) => {
-          console.error('Error al cargar las sesiones de caja:', error);
+          //console.error('Error al cargar las sesiones de caja:', error);
         },
       });
   }
@@ -977,7 +977,7 @@ export class Reportes implements OnInit {
           this.applySearchFilter3();
         },
         error: (error) => {
-          console.error('Error al cargar los movimientos de caja:', error);
+          //console.error('Error al cargar los movimientos de caja:', error);
         },
       });
   }
@@ -1253,7 +1253,7 @@ export class Reportes implements OnInit {
         // -------------------- FILTRO / PAGINADO --------------------
         this.applySearchFilter4(); // <-- usa this.ventas → filteredVentas
       },
-      error: (err) => console.error('Error al cargar ventas y productos:', err),
+      //error: (err) => console.error('Error al cargar ventas y productos:', err),
     });
   }
 
@@ -1690,7 +1690,7 @@ export class Reportes implements OnInit {
     const topN = 10;
     const dataForChart = ordered.slice(0, topN);
 
-    console.log(`✅ Data Productos Más Caros (Top ${topN})`, dataForChart);
+    //console.log(`✅ Data Productos Más Caros (Top ${topN})`, dataForChart);
 
     // 4. Mapear los datos al formato de Chart.js
     this.productosMasCarosBarData = {
@@ -1761,7 +1761,7 @@ export class Reportes implements OnInit {
       }))
       .sort((a, b) => a.sortKey - b.sortKey);
 
-    console.log('✅ Data total‑por‑fecha (ordered)', ordered);
+    //console.log('✅ Data total‑por‑fecha (ordered)', ordered);
     /* ----------------------------------------------------------
      *  GUARDAMOS EL RESULTADO EN LA PROPIEDAD QUE USARÁ EL CHART
      * ---------------------------------------------------------- */
@@ -1891,7 +1891,7 @@ export class Reportes implements OnInit {
         ],
     };
 
-    console.log('✅ Data Detalle Compras', agrupa);
+    //console.log('✅ Data Detalle Compras', agrupa);
 }
 
   private generateAllComprasCharts(): void {
@@ -1913,7 +1913,7 @@ export class Reportes implements OnInit {
       const year = date.getFullYear();
       return `${day}-${month}-${year}`;
     } catch (e) {
-      console.error('Error al formatear la fecha:', e);
+      //console.error('Error al formatear la fecha:', e);
       return 'N/A';
     }
   }
