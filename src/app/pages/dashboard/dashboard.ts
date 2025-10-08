@@ -163,8 +163,12 @@ export class Dashboard implements OnInit {
   // ✅ Lista de productos con inventario bajo
   productosConstockBajo: Producto[] = [];
   // ✅ Puntos de control de stock
-  readonly lowstockThresholds: number[] = [50, 25, 13, 5, 2];
+  readonly lowstockThresholds: number[] = [35, 25, 13, 5, 2];
   notificaciones: { id: number; titulo: string; mensaje: string }[] = [];
+  // 🔔 Nueva clave para localStorage para el control del tiempo
+  // private readonly LAST_LOWSTOCK_CHECK_KEY = 'lastLowstockCheck';
+  // 🔔 Tiempo en milisegundos para el intervalo de chequeo (1 hora)
+  //private readonly CHECK_INTERVAL_MS = 60 * 60 * 1000; // 60 minutos * 60 segundos * 1000 ms
 
   constructor(
     private userService: UserService,
@@ -200,8 +204,33 @@ export class Dashboard implements OnInit {
     });
 
     this.currentUserName = this.authService.getCurrentUserName();
-    this.programarNotificaciones();
+
+    // 4. Lógica de notificaciones con el nuevo requerimiento
+    this.checkLowstock();
+    // this.checkLowstockOnLogin(); // ✅ Chequeo inicial al cargar
+    //this.programarNotificaciones(); // ✅ Recurrencia cada 1 hora
   }
+
+  // 🔔 Nueva función para el chequeo inicial al iniciar sesión
+  // checkLowstockOnLogin(): void {
+  //   const lastCheckTime = localStorage.getItem(this.LAST_LOWSTOCK_CHECK_KEY);
+  //   const ahora = new Date().getTime();
+  //   const oneHour = 60 * 60 * 1000; // Constante local
+
+  //   // Si NO hay registro (primera vez) O si ha pasado 1 hora desde el último chequeo, lo hacemos.
+  //   if (!lastCheckTime || ahora - Number(lastCheckTime) >= oneHour) {
+  //     console.log(
+  //       '📢 Ejecutando chequeo de inventario (Primera vez o después de 1 hora de límite).'
+  //     );
+  //     this.checkLowstock();
+  //     // Actualizar el tiempo de la última revisión
+  //     localStorage.setItem(this.LAST_LOWSTOCK_CHECK_KEY, ahora.toString());
+  //   } else {
+  //     console.log(
+  //       'Skipping checkLowstock: Ya se ejecutó en la última hora al cargar el dashboard.'
+  //     );
+  //   }
+  // }
 
   setupNavigation(): void {
     const role = this.userRole;
@@ -233,19 +262,47 @@ export class Dashboard implements OnInit {
   checkLowstock(): void {
     this.inventarioService.getInventario().subscribe({
       next: (data: Producto[]) => {
-        const nuevosProductos = data.filter((product) =>
+        const productosConBajoStock = data.filter((product) =>
           this.lowstockThresholds.some(
             (threshold) => product.stock <= threshold
           )
         );
 
-        // Ordenar de menor a mayor stock
-        nuevosProductos.sort((a, b) => a.stock - b.stock);
+        // -----------------------------------------------------
+        // ✅ LÓGICA: MENSAJE CONSOLIDADO (Más de 5 productos)
+        // -----------------------------------------------------
+        if (productosConBajoStock.length > 5) {
+          // console.log(
+          //   `⚠️ Alerta consolidada: ${productosConBajoStock.length} productos con stock bajo.`
+          // );
 
-        // ---------------------------
-        // 🔔 Notificación inmediata
-        // ---------------------------
-        nuevosProductos.forEach((p) => {
+          const consolidadaId = 0;
+          const yaExisteConsolidada = this.notificaciones.some(
+            (n) => n.id === consolidadaId
+          );
+
+          if (!yaExisteConsolidada) {
+            const nuevaNotificacionConsolidada = {
+              id: consolidadaId,
+              titulo: `¡Alerta Masiva de Stock!`,
+              mensaje: `<strong>${productosConBajoStock.length} productos</strong> están quedándose sin stock. Revisa el módulo de Productos.`,
+            };
+            this.notificaciones.push(nuevaNotificacionConsolidada);
+
+            // ✅ Programamos auto-cierre a 30 segundos
+            setTimeout(() => this.cerrarNotificacion(consolidadaId), 30 * 1000);
+          }
+
+          this.productosConstockBajo = productosConBajoStock;
+          return;
+        }
+
+        // -----------------------------------------------------
+        // LÓGICA EXISTENTE: Notificaciones individuales (Si son 5 o menos)
+        // -----------------------------------------------------
+        productosConBajoStock.sort((a, b) => a.stock - b.stock);
+
+        productosConBajoStock.forEach((p) => {
           const yaExiste = this.notificaciones.some(
             (n) => n.id === p.productoId
           );
@@ -258,53 +315,85 @@ export class Dashboard implements OnInit {
 
             this.notificaciones.push(nuevaNotificacion);
 
-            // ✅ Programar auto-cierre a 1 minuto
-            setTimeout(() => this.cerrarNotificacion(p.productoId), 60 * 1000);
+            // console.log(
+            //   '⚠️ Alerta agregada:',
+            //   nuevaNotificacion.titulo,
+            //   'Stock:',
+            //   p.stock
+            // );
+            // ✅ Programar auto-cierre a 30 segundos
+            setTimeout(() => this.cerrarNotificacion(p.productoId), 30 * 1000); // 👈 MODIFICADO a 30 segundos
           }
         });
 
-        this.productosConstockBajo = nuevosProductos;
+        this.productosConstockBajo = productosConBajoStock;
       },
       error: (err) => {
         //console.error('Error al obtener el inventario:', err);
       },
     });
   }
+
   /**
    * Genera el mensaje de alerta para un producto específico.
    * @param producto El producto con bajo stock.
    * @returns El string del mensaje de alerta.
    */
+  // getLowstockMessage(producto: Producto): string {
+  //   const stock = producto.stock;
+
+  //   if (stock === 0) {
+  //     // Reemplazamos **...** por <strong>...</strong> y añadimos el tag 😱
+  //     return '¡stock AGOTADO! 😱 <strong>Añadir a la orden de compra.</strong>';
+  //   }
+  //   if (stock === 1) {
+  //     // Reemplazamos **...** por <strong>...</strong> y añadimos el tag 🚨
+  //     return '¡PELIGRO! Queda <strong>1</strong> unidad. 🚨 <strong>Se debe reponer inmediatamente.</strong>';
+  //   }
+
+  //   // 1. Encontrar el umbral más bajo que el stock ha cruzado
+  //   const lowestCrossedThreshold = this.lowstockThresholds
+  //     .filter((t) => stock <= t)
+  //     .sort((a, b) => a - b)[0]; // Tomar el primer elemento (el más bajo/crítico)
+
+  //   if (stock === lowestCrossedThreshold) {
+  //     // Usamos <strong> para el stock
+  //     return `¡Alerta de stock! Quedan exactamente <strong>${stock}</strong> unidades.`;
+  //   }
+
+  //   // Si el stock es más bajo que el umbral crítico
+  //   if (stock < lowestCrossedThreshold) {
+  //     // Usamos <strong> para el stock
+  //     return `¡stock crítico! Quedan <strong>${stock}</strong> unidades. (Pasó la marca de ${lowestCrossedThreshold})`;
+  //   }
+
+  //   // Caso por defecto
+  //   return `Quedan ${stock} unidades.`;
+  // }
   getLowstockMessage(producto: Producto): string {
     const stock = producto.stock;
 
     if (stock === 0) {
-      return '¡stock AGOTADO! 😱 **Añadir a la orden de compra.**';
+      return '¡stock AGOTADO! 😱 <strong>Añadir a la orden de compra.</strong>';
     }
     if (stock === 1) {
-      return '¡PELIGRO! Queda **1** unidad. 🚨 **Se debe reponer inmediatamente.**';
+      return '¡PELIGRO! Queda <strong>1</strong> unidad. 🚨 <strong>Se debe reponer inmediatamente.</strong>';
     }
 
-    // 1. Encontrar el umbral más bajo que el stock ha cruzado
-    const lowestCrossedThreshold = this.lowstockThresholds
+    // Usamos la lógica de umbral más alto para un mensaje más coherente
+    const highestCrossedThreshold = this.lowstockThresholds
       .filter((t) => stock <= t)
-      .sort((a, b) => a - b)[0]; // Tomar el primer elemento (el más bajo/crítico)
+      .sort((a, b) => b - a)[0];
 
-    if (stock === lowestCrossedThreshold) {
-      // Si el stock coincide exactamente con el umbral crítico (ej: stock 5, umbral 5)
-      return `¡Alerta de stock! Quedan exactamente **${stock}** unidades.`;
+    if (stock === highestCrossedThreshold) {
+      return `¡Alerta de stock! Quedan exactamente <strong>${stock}</strong> unidades. (Alcanzó el límite de ${highestCrossedThreshold})`;
     }
 
-    // Si el stock es más bajo que el umbral crítico (ej: stock 4, umbral crítico 5)
-    if (stock < lowestCrossedThreshold) {
-      // Si el stock está entre 2 y 50, se categoriza como crítico.
-      // El "lowestCrossedThreshold" nos asegura que ya ha pasado la marca de control.
-      return `¡stock crítico! Quedan **${stock}** unidades. (Pasó la marca de ${lowestCrossedThreshold})`;
+    if (stock < highestCrossedThreshold) {
+      return `¡stock crítico! Quedan <strong>${stock}</strong> unidades. (Pasó la marca de ${highestCrossedThreshold})`;
     }
 
-    // Caso por defecto (cubre stocks como 49, que está por debajo del umbral 50,
-    // pero aún no es "crítico" si tienes umbrales más bajos)
-    return `Quedan ${stock} unidades.`;
+    return `Quedan <strong>${stock}</strong> unidades.`;
   }
 
   removeLowstockProduct(productId: number): void {
@@ -356,35 +445,38 @@ export class Dashboard implements OnInit {
   //   // Revisa cada minuto si se cumple la condición
   //   setInterval(revisarYMostrar, 60 * 1000);
   // }
-  programarNotificaciones(): void {
-    const mostrarNotificacion = () => {
-      this.checkLowstock(); // refresca productos y llena this.notificaciones
-      if (this.notificaciones.length > 0) {
-        //console.log('🔔 Mostrando notificaciones de stock bajo');
-      }
-    };
+  // programarNotificaciones(): void {
+  //   const mostrarNotificacion = () => {
+  //     this.checkLowstock(); // refresca productos y llena this.notificaciones
+  //     const ahora = new Date().getTime();
+  //     // Actualizar el tiempo de la última revisión después de la verificación
+  //     localStorage.setItem(this.LAST_LOWSTOCK_CHECK_KEY, ahora.toString());
 
-    const revisarYMostrar = () => {
-      const ahora = new Date();
-      const hora = ahora.getHours();
-      const minutos = ahora.getMinutes();
+  //     if (this.notificaciones.length > 0) {
+  //       //console.log('🔔 Mostrando notificaciones de stock bajo');
+  //     }
+  //   };
 
-      // ✅ Solo a las 10:00 o 14:00 en punto
-      if ((hora === 10 || hora === 14) && minutos === 0) {
-        const ultimo = localStorage.getItem('ultimoNotificacion');
-        const hoy = new Date().toDateString();
+  //   const revisarYMostrar = () => {
+  //     const lastCheckTime = localStorage.getItem(this.LAST_LOWSTOCK_CHECK_KEY);
+  //     const ahora = new Date().getTime();
 
-        if (ultimo !== hoy) {
-          // ⚡ Ahora es DIARIO, no cada 3 días
-          mostrarNotificacion();
-          localStorage.setItem('ultimoNotificacion', hoy);
-        }
-      }
-    };
+  //     // Si ha pasado al menos el intervalo de chequeo (1 hora)
+  //     if (
+  //       !lastCheckTime ||
+  //       ahora - Number(lastCheckTime) >= this.CHECK_INTERVAL_MS // 👈 Si esta condición es FALSE, el código termina aquí.
+  //     ) {
+  //       this.checkLowstock();
+  //       localStorage.setItem(this.LAST_LOWSTOCK_CHECK_KEY, ahora.toString());
+  //     }
+  //   };
 
-    // ✅ Revisa cada minuto si se cumple la condición
-    setInterval(revisarYMostrar, 60 * 1000);
-  }
+  //   // ✅ Revisa cada minuto si se cumple la condición de la hora (cada minuto es más eficiente
+  //   //    que revisar cada 1 hora exactamente, para asegurarnos de no saltarnos el momento)
+  //   //    OJO: Mantuve el intervalo de 60 segundos por costumbre, puedes subirlo a 5 minutos (300 * 1000)
+  //   //    si no quieres tanto chequeo, ya que la lógica principal es cada 1 hora.
+  //   setInterval(revisarYMostrar, 60 * 1000);
+  // }
 
   getCurrentUserName(): string | null {
     const token = this.getToken();
