@@ -1,17 +1,10 @@
 # Configuración de compilación para Netlify
 [build]
-  # Comando para construir el proyecto en modo producción
   command = "ng build --configuration production"
-  
-  # Directorio que contiene los archivos estáticos del navegador (CSS, JS, imágenes)
   publish = "dist/FrontendAE/browser"
 
-# Configuración para las funciones serverless (nuestro servidor de Angular)
-[functions]
-  # Directorio que contiene el servidor compilado
-  directory = "dist/FrontendAE/server"
-
 # Regla de reescritura para que todas las peticiones vayan al servidor
+# El plugin se encargará de crear la función "server" automáticamente
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/server"
