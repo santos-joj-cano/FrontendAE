@@ -3,8 +3,13 @@
   command = "ng build --configuration production"
   publish = "dist/FrontendAE/browser"
 
-# Regla de reescritura para que todas las peticiones vayan al servidor
-# El plugin se encargará de crear la función "server" automáticamente
+# PRIMERO: Redirección específica para la ruta raíz
+[[redirects]]
+  from = "/"
+  to = "/login"
+  status = 301 # 301 indica una redirección permanente
+
+# SEGUNDO: Regla general para que Angular maneje todas las demás rutas
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/server"
